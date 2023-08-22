@@ -1,0 +1,14 @@
+SSLRequireSSL
+AuthType shibboleth
+ShibRequestSetting requireSession Off
+ShibUseHeaders On
+require shibboleth
+
+# PDF generation involves an internal HTTP GET from the web server
+# with no shibboleth authentication.
+<Files genpdf.php>
+  <RequireAny>
+    Require ip IPV4_OF_YOUR_WEB_SERVER_HERE
+    Require ip IPV6_OF_YOUR_WEB_SERVER_HERE
+  </RequireAny>
+</Files>

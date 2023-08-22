@@ -1,0 +1,9 @@
+*~
+bootstrap
+adminer
+img
+stock_img
+stockroom-db/img
+uploads
+vendor
+composer.lock

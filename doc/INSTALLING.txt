@@ -1,0 +1,69 @@
+This web app requires Apache, PHP, MySQL/Mariadb, and periodic running
+of scripts via cron or equivalent.  It has only been tested in Linux.
+The following versions of things have been observed to work:
+
+Debian Linux 11
+Apache 2.4.56
+PHP 7.4
+MariaDB 10.5.19
+
+Installation steps:
+
+1. Clone the git repo into a directory served by the web server.
+
+2. Install PHP dependencies.
+
+php composer.phar update
+
+3. Create a directory with appropriate permissions to allow the web
+   server to store uploaded files.  No other directories should be
+   writable by the web server.
+
+mkdir img uploads
+sudo chown www-data:www-data img uploads
+
+4. Configure the web directory to require shibboleth or alternate authentication.
+
+cp htaccess-example .htaccess
+
+5. Create a config file and edit it:
+
+cp config-example.php config.php
+
+6. Create a database connection file and edit it:
+
+cp db-example.php db.php
+
+7. Create a database.
+
+CREATE DATABASE example_shop default charset utf8;
+
+8. Create the database schema.
+
+mysql < doc/schema.sql
+
+9. Add any customized column names from the config.php file (example SHOP_ADMIN_COL).
+
+ALTER TABLE user ADD COLUMN ESHOP_ADMIN TINYINT(1) NOT NULL DEFAULT 0;
+
+10. Create a database user and grant privileges.
+
+CREATE USER 'example_shop'@'localhost' IDENTIFIED BY 'example-password';
+GRANT ALL ON example_shop.* TO 'example_shop'@'localhost';
+
+11. Log in to the app via a web browser.
+
+12. Make your account an admin user.
+
+UPDATE user WHERE NETID = 'example' SET SHOP_ADMIN = 1;
+
+13. Set up cron jobs if desired.  Example:
+
+13 10 * * * /usr/bin/php /var/www/app/example_shop/scripts/overdue_notices.php
+25 5 1 * * /usr/bin/php /var/www/app/example_shop/scripts/bill_last_month.php
+
+14. Make sure database is backed up regularly, for example with
+    automysqlbackup plus some other backup service.
+
+15. Import parts from a CSV file.  The script scripts/import_parts.php may help.
+    Similarly, import_vendors.php may be used to import vendors.

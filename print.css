@@ -1,0 +1,20 @@
+.noprint {display: none}
+tr.record:nth-child(odd) { background-color: #FFFFFF; }
+.fillpagewidth { width: 100%; }
+
+/* disable border-collapse in the table, because it causes some of the
+borders around the table header to be missing on pages after the first
+one */
+
+table.records { border-collapse: separate; border-spacing: 0; }
+table.records thead {display: table-header-group;}
+table.records, .records th, .records td { border: 1pt solid black; }
+
+.print-textarea {
+  white-space: pre-wrap;
+  border: 1pt solid black;
+}
+
+.navbar {
+  display: none;
+}
