@@ -22,48 +22,73 @@ php composer.phar update
 mkdir img uploads
 sudo chown www-data:www-data img uploads
 
-4. Configure the web directory to require shibboleth or alternate authentication.
+4. Configure the web directory to require shibboleth or alternate
+   authentication.  If shibboleth is configured to provide the user's
+   name and email address, the app will make use of it.  It expects
+   them to be available via the attributes 'givenName', 'sn',
+   'wiscEduMSOLPrimaryAddress', and/or 'mail'.
 
 cp htaccess-example .htaccess
 
-5. Create a config file and edit it:
+5. Disable web access to the .git directory:
+
+cp scripts/.htaccess .git/.htaccess
+
+6. Create a config file and edit it:
 
 cp config-example.php config.php
 
-6. Create a database connection file and edit it:
+7. Create a database connection file and edit it:
 
 cp db-example.php db.php
 
-7. Create a database.
+8. Create a database.
 
 CREATE DATABASE example_shop default charset utf8;
 
-8. Create the database schema.
+9. Create the database schema.
 
 mysql < doc/schema.sql
 
-9. Add any customized column names from the config.php file (example SHOP_ADMIN_COL).
+10. Add any customized column names from the config.php file (example SHOP_ADMIN_COL).
 
 ALTER TABLE user ADD COLUMN ESHOP_ADMIN TINYINT(1) NOT NULL DEFAULT 0;
 
-10. Create a database user and grant privileges.
+11. Create a database user and grant privileges.
 
 CREATE USER 'example_shop'@'localhost' IDENTIFIED BY 'example-password';
 GRANT ALL ON example_shop.* TO 'example_shop'@'localhost';
 
-11. Log in to the app via a web browser.
+12. Log in to the app via a web browser.  This will create a record
+    for you in the user table.
 
-12. Make your account an admin user.
+13. Make your account an admin user.  Once you are an admin, you can
+    empower other admins through the web interface rather than using
+    the database to do it.
 
 UPDATE user WHERE NETID = 'example' SET SHOP_ADMIN = 1;
 
-13. Set up cron jobs if desired.  Example:
+14. Set up cron jobs if desired.  These can run as the web server user
+    (e.g. www-data).  Example:
 
 13 10 * * * /usr/bin/php /var/www/app/example_shop/scripts/overdue_notices.php
 25 5 1 * * /usr/bin/php /var/www/app/example_shop/scripts/bill_last_month.php
 
-14. Make sure database is backed up regularly, for example with
+15. Make sure the database is backed up regularly, for example with
     automysqlbackup plus some other backup service.
 
-15. Import parts from a CSV file.  The script scripts/import_parts.php may help.
-    Similarly, import_vendors.php may be used to import vendors.
+16. If desired, import part definitions from a CSV file.  The script
+    scripts/import_parts.php may help.  Similarly, import_vendors.php
+    may be used to import vendors.  Otherwise, all data can be entered
+    through the administrative interface.
+
+17. If the web interface is being run in a kiosk, it can make things
+    behave more predictably to have the browser restart after each
+    session.  One way to achieve this is to have a script listen on
+    localhost port 9999 and restart the browser when it receives a
+    connection.  The web app will connect to port 9999 when the user
+    logs out if the app was loaded with query parameter 'kiosk'.
+    Example: https://example.wisc.edu/shop?kiosk
+    An example of a script that runs and restarts the web browser
+    is in scripts/launch_browser.py.
+ 
