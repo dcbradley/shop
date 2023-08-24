@@ -51,18 +51,44 @@ const SHOW_MAN_NUM_COL = False;
 # Show the minimum quantity in the parts table.
 const SHOW_MIN_QTY_COL = False;
 
-# Column in the user table (tinyint(1)) that is used to record whether the user is an admin or not.
-const SHOP_ADMIN_COL = "SHOP_ADMIN";
+# A short uppercase string identifying this shop and suitable for use in database column names.
+# If multiple shops are sharing the same user table, this may be useful for
+# differentiating some of the columns in the user record.
+const SHOP_IDENTIFIER = "SHOP";
 
-# Column in the user table (tinyint(1)) that is used to record whether the user is a shop worker or not.
+# Column in the user table that is used to record whether the user is an admin or not.
+# This is configurable in case you wish multiple shops to share the same user table.
+# Using the same column name across multiple shops will result in the admins being
+# the same across the shops.  Using a different column name will allow the admins to
+# be different.
+# After changing this, running update_database_schema.php will add a new column by
+# the specified name.  If you instead wish to rename an existing column, you will need
+# to do that yourself.
+const SHOP_ADMIN_COL = SHOP_IDENTIFIER . "_ADMIN";
+
+# Column in the user table that is used to record whether the user is a shop worker or not.
 # Shop workers have most of the same powers as the shop admin when viewing work orders.
-const SHOP_WORKER_COL = "SHOP_WORKER";
+# If you do not wish to have shop workers, this can be set to null.
+# This is configurable in case you wish multiple shops to share the same user table.
+# Using the same column name across multiple shops will result in the admins being
+# the same across the shops.  Using a different column name will allow the admins to
+# be different.
+# After changing this, running update_database_schema.php will add a new column by
+# the specified name.  If you instead wish to rename an existing column, you will need
+# to do that yourself.
+const SHOP_WORKER_COL = SHOP_IDENTIFIER . "_WORKER";
 
-# Column in the user table (datetime) that is used to record the time when the user last logged in.
-const SHOP_LAST_LOGIN_COL = 'SHOP_LAST_LOGIN';
+# Column in the user table that is used to record the time when the user last logged in.
+# After changing this, running update_database_schema.php will add a new column by
+# the specified name.  If you instead wish to rename an existing column, you will need
+# to do that yourself.
+const SHOP_LAST_LOGIN_COL = SHOP_IDENTIFIER . '_LAST_LOGIN';
 
-# Column in the user table (tinyint(1)) that is used to record that the user was added via this shop.
-const SHOP_USER_CREATED_COL = 'ADDED_VIA_SHOP';
+# Column in the user table that is used to record that the user was added via this shop.
+# After changing this, running update_database_schema.php will add a new column by
+# the specified name.  If you instead wish to rename an existing column, you will need
+# to do that yourself.
+const SHOP_USER_CREATED_COL = 'ADDED_VIA_' . SHOP_IDENTIFIER;
 
 # If true, the status column in the parts table will indicate whether a photo has been provided for the part.
 const NO_PHOTO_STATUS = False;
@@ -87,16 +113,19 @@ const NEW_ORDERS_PRESERVE_MARKUP_TYPE = True;
 # when creating a new order for a part, this is the default price markup type to use
 const NEW_ORDER_MARKUP_TYPE = NO_MARKUP_CODE;
 
-# html to display on shop login screen
-const SHOP_LOGIN_NOTICE = "<p>You may also use this web app on your own device:<br><img src='shop_qr.png'/></p>";
+# HTML to display on shop login screen.
+# A QR code could be displayed to make it easy for people to use the app from their own device.
+#const SHOP_LOGIN_NOTICE = "<p>You may also use this web app on your own device:<br><img src='shop_qr.png'/></p>";
 
-# html to display on the workorder login screen
+# HTML to display on the workorder login screen.
+# A QR code could be displayed to make it easy for people to use the app from their own device.
 const SHOP_WORKORDER_LOGIN_NOTICE = "";
 
-# html to display when people borrow a tool
+# HTML to display when people borrow a tool, perhaps reminding them of the procedure for returning things.
 const SHOP_LOAN_NOTICE = "";
 
-const MAIN_FUND_GROUPS_LABEL = "Main Physics Groups/Areas";
+# Heading for funding sources imported from a master list (e.g. scripts/import_from_purchasing_db.php)
+#const MAIN_FUND_GROUPS_LABEL = "Main Physics Groups/Areas";
 
 # key = manifest group, value = department name
 # The manifest group must have its Entity ID set appropriately to make it accessible to the web server.

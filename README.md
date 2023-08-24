@@ -1,17 +1,17 @@
-# shop
+# Shop App
 Web interface for a shop.  Used by the UW-Madison Physics electronics shop, stockroom, and instrument shop.
 
 See doc/INSTALLING.txt for installation instructions.
 
 Features include:
 
-  * User interface for purchasing items from a database of parts.
+  * Web interface for purchasing items from a database of parts.
 
-  * User interface for creating work orders.
+  * Web interface for creating and accounting work orders.
 
   * Payment via funding sources chosen from a list maintained by admins and/or users.
 
-  * Billing statements and production of a fund transfer spreadsheet.
+  * Monthly billing statements and production of a fund transfer spreadsheet.
 
 # Credits
 

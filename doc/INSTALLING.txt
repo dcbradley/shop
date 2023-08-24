@@ -9,20 +9,31 @@ MariaDB 10.5.19
 
 Installation steps:
 
-1. Clone the git repo into a directory served by the web server.
+1. Clone the git repo into a directory served by the web server and
+   rename it as desired.
 
-2. Install PHP dependencies.
+git clone https://github.com/dcbradley/shop.git
+mv shop example_shop
+cd example_shop
+
+2. If desired, check out a specific version.  Example:
+
+git checkout v1.0
+
+   To see the available version tags use the command 'git tag'.
+
+3. Install PHP dependencies.
 
 php composer.phar update
 
-3. Create a directory with appropriate permissions to allow the web
+4. Create a directory with appropriate permissions to allow the web
    server to store uploaded files.  No other directories should be
    writable by the web server.
 
 mkdir img uploads
 sudo chown www-data:www-data img uploads
 
-4. Configure the web directory to require shibboleth or alternate
+5. Configure the web directory to require shibboleth or alternate
    authentication.  If shibboleth is configured to provide the user's
    name and email address, the app will make use of it.  It expects
    them to be available via the attributes 'givenName', 'sn',
@@ -30,34 +41,34 @@ sudo chown www-data:www-data img uploads
 
 cp htaccess-example .htaccess
 
-5. Disable web access to the .git directory:
+6. Disable web access to the .git directory:
 
 cp scripts/.htaccess .git/.htaccess
 
-6. Create a config file and edit it:
+7. Create a config file and edit it:
 
 cp config-example.php config.php
 
-7. Create a database connection file and edit it:
+8. Create a database connection file and edit it:
 
 cp db-example.php db.php
 
-8. Create a database.
+9. Create a database matching the database name you configured in db.php.
 
-CREATE DATABASE example_shop default charset utf8;
+mysql> CREATE DATABASE example_shop default charset utf8;
 
-9. Create the database schema.
+10. Create a database user matching the name and password configured in db.php.
 
-mysql < doc/schema.sql
+mysql> CREATE USER 'example_shop'@'localhost' IDENTIFIED BY 'example-password';
+mysql> GRANT ALL ON example_shop.* TO 'example_shop'@'localhost';
 
-10. Add any customized column names from the config.php file (example SHOP_ADMIN_COL).
+11. Initialize the database.  This must be repeated any time you
+    change the customized column names in config.php
+    (e.g. SHOP_ADMIN_COL).  The reason there are customizable column
+    names is to allow for multiple shops sharing the same user
+    database to have an independent set of admins and so on.
 
-ALTER TABLE user ADD COLUMN ESHOP_ADMIN TINYINT(1) NOT NULL DEFAULT 0;
-
-11. Create a database user and grant privileges.
-
-CREATE USER 'example_shop'@'localhost' IDENTIFIED BY 'example-password';
-GRANT ALL ON example_shop.* TO 'example_shop'@'localhost';
+php scripts/update_database_schema.php
 
 12. Log in to the app via a web browser.  This will create a record
     for you in the user table.
@@ -66,13 +77,13 @@ GRANT ALL ON example_shop.* TO 'example_shop'@'localhost';
     empower other admins through the web interface rather than using
     the database to do it.
 
-UPDATE user WHERE NETID = 'example' SET SHOP_ADMIN = 1;
+mysql> UPDATE user WHERE NETID = 'example' SET SHOP_ADMIN = 1;
 
 14. Set up cron jobs if desired.  These can run as the web server user
     (e.g. www-data).  Example:
 
-13 10 * * * /usr/bin/php /var/www/app/example_shop/scripts/overdue_notices.php
-25 5 1 * * /usr/bin/php /var/www/app/example_shop/scripts/bill_last_month.php
+13 10 * * * /usr/bin/php /var/www/example_shop/scripts/overdue_notices.php
+25 5 1 * * /usr/bin/php /var/www/example_shop/scripts/bill_last_month.php
 
 15. Make sure the database is backed up regularly, for example with
     automysqlbackup plus some other backup service.
@@ -88,7 +99,6 @@ UPDATE user WHERE NETID = 'example' SET SHOP_ADMIN = 1;
     localhost port 9999 and restart the browser when it receives a
     connection.  The web app will connect to port 9999 when the user
     logs out if the app was loaded with query parameter 'kiosk'.
-    Example: https://example.wisc.edu/shop?kiosk
+    Example: https://example.wisc.edu/example_shop?kiosk
     An example of a script that runs and restarts the web browser
     is in scripts/launch_browser.py.
- 

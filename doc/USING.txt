@@ -1,0 +1,17 @@
+
+Currently, there are two independent user interfaces: checkout and
+work order.  The URL of the shop checkout user interface is the URL of
+the directory containing the shop app.  The URL of the work order interface
+is the same with "workorder" appended.  It is assumed that the web
+server is configured to use index.php as a directory index.
+
+Example URLs:
+
+https://example.wisc.edu/example_shop
+https://example.wisc.edu/example_shop/workorder
+
+The administrative interface uses the same URL as the normal user
+interface.  Administrative users are flagged as admins by having an
+administrator edit their user profile and check the admin box.  The
+first admin has to be set as an admin by editing their record in the
+database.

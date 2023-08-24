@@ -21,7 +21,7 @@ if( !defined('SHOP_TECH_COL') ) {
 }
 
 if( !defined('SHOP_ORIENTATED_COL') ) {
-  define('SHOP_ORIENTATED_COL');
+  define('SHOP_ORIENTATED_COL',null);
 }
 
 if( !defined('OTHER_SHOPS_IN_WORK_ORDERS') ) {
@@ -80,4 +80,16 @@ if( !defined('CREDIT_CARD_URL') ) {
 
 if( !defined('LIBJS') ) {
   define('LIBJS',WEBAPP_TOP . "libjs/");
+}
+
+if( !defined('SHOP_LOGIN_NOTICE') ) {
+  define('SHOP_LOGIN_NOTICE','');
+}
+
+if( !defined('SHOP_WORKORDER_LOGIN_NOTICE') ) {
+  define('SHOP_WORKORDER_LOGIN_NOTICE','');
+}
+
+if( !defined('MAIN_FUND_GROUPS_LABEL') ) {
+  define('MAIN_FUND_GROUPS_LABEL','');
 }
