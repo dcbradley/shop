@@ -75,9 +75,9 @@ php scripts/update_database_schema.php
 
 13. Make your account an admin user.  Once you are an admin, you can
     empower other admins through the web interface rather than using
-    the database to do it.
+    the script to do it.
 
-mysql> UPDATE user WHERE NETID = 'example' SET SHOP_ADMIN = 1;
+php scripts/make_admin.php example_netid
 
 14. Set up cron jobs if desired.  These can run as the web server user
     (e.g. www-data).  Example:
