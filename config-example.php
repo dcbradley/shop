@@ -2,16 +2,27 @@
 
 const SHOP_NAME = "Example Shop";
 
+const SHOP_FULL_NAME = "Department Example Shop";
+
+const SHOP_LOGO = "uwcrest_web_sm.png";
+
 const SHOP_ADMIN_NAME = "Example Admin";
 
 # The shop admin may be sent email regarding work orders and overdue loans.
 const SHOP_ADMIN_EMAIL = "example@wisc.edu";
+
+# Email provided for users needing help with accounts.
+#const ACCOUNT_HELP_EMAIL = SHOP_ADMIN_EMAIL;
 
 # Email sent from the app, if any, will come from this address.
 const SHOP_FROM_EMAIL = "example@department.wisc.edu";
 
 # Full URL of this app.
 const SHOP_URL = "https://example.wisc.edu/shop";
+
+# IP address blocks in which to allow group account access (i.e. just entering a group account name and not authenticating)
+# Format is the left-most part of the IP address to match.
+#const IP_RANGE_TO_ALLOW_UNAUTHENTICATED_LOGINS = array();
 
 # SQL to sort the table of parts in the administrative interface.
 const SHOP_PART_ORDER = "ORDER BY CAST(STOCK_NUM AS UNSIGNED)";

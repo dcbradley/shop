@@ -614,21 +614,8 @@ function getLoginMethod() {
 }
 
 function allowNonNetIDLogins() {
-  # only allow non-netid logins from within the campus network
   $ipaddr = $_SERVER['REMOTE_ADDR'];
-  $iprange = array(
-    "2607:f388:",
-    "10.",
-    "72.33.",
-    "144.92.",
-    "128.104.",
-    "128.105.",
-    "146.151.",
-    "198.133.224",
-    "198.133.225",
-    "198.51.254",
-  );
-  foreach( $iprange as $allowed_iprange ) {
+  foreach( IP_RANGE_TO_ALLOW_UNAUTHENTICATED_LOGINS as $allowed_iprange ) {
     if( strncmp($ipaddr,$allowed_iprange,strlen($allowed_iprange))==0 ) return true;
   }
   return false;

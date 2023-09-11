@@ -8,6 +8,10 @@ if( !defined('COOKIE_PATH') ) {
   define('COOKIE_PATH',str_replace("/index.php","/",$_SERVER["PHP_SELF"]));
 }
 
+if( !defined('SHOP_FULL_NAME') ) {
+  define('SHOP_FULL_NAME',SHOP_NAME);
+}
+
 if( !defined('TIMESHEET_SCHEDULE') ) {
   define('TIMESHEET_SCHEDULE',array(array('days' => 'MTWRF')));
 }
@@ -92,4 +96,16 @@ if( !defined('SHOP_WORKORDER_LOGIN_NOTICE') ) {
 
 if( !defined('MAIN_FUND_GROUPS_LABEL') ) {
   define('MAIN_FUND_GROUPS_LABEL','');
+}
+
+if( !defined('ACCOUNT_HELP_EMAIL') ) {
+  define('ACCOUNT_HELP_EMAIL',SHOP_ADMIN_EMAIL);
+}
+
+if( !defined('SMALL_LOGO') ) {
+  define('SMALL_LOGO','');
+}
+
+if( !defined('IP_RANGE_TO_ALLOW_UNAUTHENTICATED_LOGINS') ) {
+  define('IP_RANGE_TO_ALLOW_UNAUTHENTICATED_LOGINS',array());
 }

@@ -70,7 +70,7 @@ if( !$web_user ) {
   ?>
     <main role="main" class="container">
     <div class="bg-light p-5 rounded text-center">
-      <h1>Welcome to the UW Physics <?php echo htmlescape(SHOP_NAME)  ?></h1>
+      <h1>Welcome to the <?php echo htmlescape(SHOP_FULL_NAME) ?></h1>
       <p class="lead">Please use this form to record purchases.</p>
       <p><button class="btn btn-lg btn-primary" role="button" onclick='login()'>Log in with NetID &raquo;</button></p>
       <?php if( allowNonNetIDLogins() ) { ?>
@@ -87,7 +87,7 @@ if( !$web_user ) {
          </div>
          </div>
          </form>
-      <p>(To set up a group account, contact help@physics.wisc.edu or enable group access in <a href='#' onclick='login("profile")'>your profile</a>.)</p>
+      <p>(To set up a group account, contact <?php echo htmlescape(ACCOUNT_HELP_EMAIL) ?> or enable group access in <a href='#' onclick='login("profile")'>your profile</a>.)</p>
       <?php } ?>
       <noscript>ERROR: javascript is disabled and is required by this web app.</noscript>
       <?php echo SHOP_LOGIN_NOTICE ?>
@@ -307,7 +307,9 @@ function getOrderRecord($order_id) {
 function showNavbar($user,$show) {
 ?>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
-      <span class="navbar-brand" href="#"><img src="<?php echo WEBAPP_TOP ?>uwcrest_web_sm.png" height="30" class="d-inline-block align-top" alt="UW"> Physics <?php echo htmlescape(SHOP_NAME) ?></span>
+      <span class="navbar-brand" href="#">
+      <?php if( SMALL_LOGO ) echo '<img src="' . WEBAPP_TOP . SMALL_LOGO . '" height="30" class="d-inline-block align-top" alt="UW">' ?>
+      <?php echo htmlescape(SHOP_FULL_NAME) ?></span>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -1969,28 +1971,30 @@ function editPart() {
   function checkStockNum() {
     var stock_num_elem = document.getElementById("stock_num");
     var stock_num = stock_num_elem.value.trim();
+    var order_btn = document.getElementById("order_btn");
+    var save_btn = document.getElementById("save_btn");
     if( stock_num.indexOf(" ") >= 0 ) {
-      document.getElementById("save_btn").disabled = true;
-      document.getElementById("order_btn").disabled = true;
+      save_btn.disabled = true;
+      if( order_btn ) order_btn.disabled = true;
       $("#stock_num_msg").text("Stock number may not contain a space.");
       return;
     }
     if( stock_num == "" ) {
-      document.getElementById("save_btn").disabled = true;
-      document.getElementById("order_btn").disabled = true;
+      save_btn.disabled = true;
+      if( order_btn ) order_btn.disabled = true;
       $("#stock_num_msg").text("");
       return;
     }
     $.ajax({ url: "partinfo.php?part=" + encodeURI(stock_num), success: function(data) {
       var part_info = JSON.parse(data);
       if( part_info && !part_info["FOUND"] ) {
-        document.getElementById("save_btn").disabled = false;
-        document.getElementById("order_btn").disabled = false;
+        save_btn.disabled = false;
+        if( order_btn ) order_btn.disabled = false;
         $("#stock_num_msg").text("");
       }
       else if( part_info && part_info["part_id"] != '<?php echo $part_id ?>' ) {
-        document.getElementById("save_btn").disabled = true;
-        document.getElementById("order_btn").disabled = true;
+        save_btn.disabled = true;
+        if( order_btn ) order_btn.disabled = true;
         $("#stock_num_msg").text("Stock number " + stock_num + " is already in use.");
       }
     }});
@@ -2030,10 +2034,6 @@ function echoSelectVendor($selected_vendor_id) {
 function savePart($user,&$show) {
   $show = $_REQUEST["submit"] == "Order" ? "order" : "part";
 
-  # Use the same rule for extracting the stock num here as in partinfo.php to avoid problematic stock numbers getting created.
-  # The user interface takes care of avoiding this even happening, so this is just for security.
-  $stock_num = explode(" ",trim($_POST["stock_num"]))[0];
-
   $dbh = connectDB();
   $set_sql = "SET STOCK_NUM = :STOCK_NUM, DESCRIPTION = :DESCRIPTION";
   if( ENABLE_PART_LOCATION ) {
@@ -2067,6 +2067,17 @@ function savePart($user,&$show) {
   }
 
   $before_change = getPartRecord($part_id);
+
+  # Use the same rule for extracting the stock num here as in partinfo.php to avoid problematic stock numbers getting created.
+  # The user interface takes care of avoiding this even happening, so this is just for security.
+  $stock_num = explode(" ",trim($_POST["stock_num"]))[0];
+  # The one exception to the above is if this is an existing record and the stock_num is not being changed.  Then leave it alone,
+  # since changing it might introduce a duplicate key error.
+  if( $part_id !== null && $before_change ) {
+    if( $before_change['STOCK_NUM'] == $_POST["stock_num"] ) {
+      $stock_num = $_POST["stock_num"];
+    }
+  }
 
   $img_fname = $before_change ? $before_change["IMAGE"] : null;
   if( $img_fname === null ) $img_fname = "";

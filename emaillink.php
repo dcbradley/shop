@@ -28,12 +28,12 @@ $msg[] = $url;
 $msg = implode("\r\n",$msg);
 
 $headers = array();
-$headers[] = "From: Physics IT <help@physics.wisc.edu>";
+$headers[] = "From: " . SHOP_NAME . " <" . SHOP_FROM_EMAIL . ">";
 $headers = implode("\r\n",$headers);
 
 $subject = SHOP_NAME . " checkout registration";
 
-if( !mail($to,$subject,$msg,$headers,"-f help@physics.wisc.edu") ) {
+if( !mail($to,$subject,$msg,$headers,"-f " . SHOP_FROM_EMAIL) ) {
   echo "FAILED";
   exit(1);
 }

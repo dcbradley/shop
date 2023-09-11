@@ -87,7 +87,7 @@ if( !$web_user ) {
   ?>
     <main role="main" class="container">
     <div class="bg-light p-5 rounded text-center">
-      <h1>Welcome to the UW Physics <?php echo htmlescape(SHOP_NAME)  ?></h1>
+      <h1>Welcome to the <?php echo htmlescape(SHOP_FULL_NAME)  ?></h1>
       <p class="lead">Please use this form to create work orders.</p>
       <p><button class="btn btn-lg btn-primary" role="button" onclick='login()'>Log in with NetID &raquo;</button></p>
       <?php if( allowNonNetIDLogins() ) { ?>
@@ -104,7 +104,7 @@ if( !$web_user ) {
          </div>
          </div>
          </form>
-      <p>(To set up a group account, contact help@physics.wisc.edu or enable group access in <a href='#' onclick='login("profile")'>your profile</a>.)</p>
+      <p>(To set up a group account, contact <?php echo ACCOUNT_HELP_EMAIL ?> or enable group access in <a href='#' onclick='login("profile")'>your profile</a>.)</p>
       <?php } ?>
       <noscript>ERROR: javascript is disabled and is required by this web app.</noscript>
       <?php echo SHOP_WORKORDER_LOGIN_NOTICE ?>
@@ -304,7 +304,9 @@ function showShopWorkerAppsMenu() {
 function showNavbar($user,$show,$default_show) {
 ?>
     <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
-      <span class="navbar-brand" href="#"><img src="<?php echo WEBAPP_TOP ?>uwcrest_web_sm.png" height="30" class="d-inline-block align-top" alt="UW"> Physics <?php echo htmlescape(SHOP_NAME) ?></span>
+      <span class="navbar-brand" href="#">
+      <?php if( SMALL_LOGO ) echo '<img src="' . WEBAPP_TOP . SMALL_LOGO . '" height="30" class="d-inline-block align-top" alt="UW">' ?>
+      <?php echo htmlescape(SHOP_FULL_NAME) ?></span>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -473,7 +475,7 @@ function showWorkOrders($web_user,$my_work_orders=false) {
       echo "<a class='btn btn-primary' href='?id=new_quote'>New Quote</a>\n";
     }
     if( ENABLE_STUDENT_SHOP_ACCESS_ORDERS ) {
-      if( $web_user->employee_type == "Student" && strtolower($web_user->department) != "physics" ) {
+      if( $web_user->employee_type == "Student" && strtolower($web_user->department) != strtolower(STUDENT_SHOP_DEPARTMENT) ) {
         echo "<a class='btn btn-primary' href='?id=new_student_shop'>Student Shop Access</a>\n";
       }
     }
@@ -2386,13 +2388,13 @@ function emailWorkOrder($wo_id,$email=null,$to_admin=false) {
   $msg = implode("\r\n",$msg);
 
   $headers = array();
-  $headers[] = "From: Physics IT <help@physics.wisc.edu>";
+  $headers[] = "From: " . SHOP_NAME . " <" . SHOP_FROM_EMAIL . ">";
   $headers[] = "Reply-To: " . $ordered_by_email;
   $headers[] = 'MIME-Version: 1.0';
   $headers[] = 'Content-type: text/html; charset=iso-8859-1';
   $headers = implode("\r\n",$headers);
 
-  mail($email,$subject,$msg,$headers,"-f help@physics.wisc.edu");
+  mail($email,$subject,$msg,$headers,"-f " . SHOP_FROM_EMAIL);
 }
 
 function saveStockOrder($web_user,$wo_id) {
@@ -2868,7 +2870,7 @@ function saveWorkOrderAttachments($web_user,$wo_id) {
 
     $full_fname = "$upload_dir/$uploaded_file";
     if( !move_uploaded_file($_FILES[$key]["tmp_name"],$full_fname) ) {
-      echo "<div class='alert alert-danger'>Unable to save uploaded file ",htmlescape($uploaded_file),"!  Please contact help@physics.wisc.edu.</div>\n";
+      echo "<div class='alert alert-danger'>Unable to save uploaded file ",htmlescape($uploaded_file),"!  Please contact ",htmlescape(SHOP_ADMIN_EMAIL),".</div>\n";
       continue;
     }
 
@@ -2998,7 +3000,7 @@ function showStudentShopAccessOrder($web_user) {
   $rowclass = "row mt-3 mt-sm-0";
   $col1 = "col-sm-4 col-md-3 col-lg-2 label";
 
-  echo "<p>This form is for use by student employees who are not employed by the physics department to request access to the <a href='https://www.physics.wisc.edu/ishop/staffstudentshop.html'>physics department student shop</a>.  Please consult your supervisor about the appropriate fund to use to cover the costs.</p>\n";
+  echo "<p>This form is for use by student employees who are not employed by the ",htmlescape(tolower(STUDENT_SHOP_DEPARTMENT))," department to request access to the <a href='",htmlescape(STUDENT_SHOP_URL),"'>",htmlescape(tolower(STUDENT_SHOP_DEPARTMENT))," department student shop</a>.  Please consult your supervisor about the appropriate fund to use to cover the costs.</p>\n";
 
   $url = '?s=work_order';
   echo "<p>To view past orders, go to <a href='",htmlescape($url),"'>My Orders</a>.</p>\n";
@@ -3268,7 +3270,7 @@ function saveStudentShopAccessOrder($web_user) {
       }
     }
   }
-  $description = "Physics student shop access for $description";
+  $description = STUDENT_SHOP_DEPARTMENT . " student shop access for $description";
   $stmt->bindValue(":DESCRIPTION",$description);
 
   if( empty($begin_date) || empty($end_date) ) {

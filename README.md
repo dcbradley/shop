@@ -16,6 +16,6 @@ Features include:
 # Credits
 
 The design of this app was largely shaped by Billy Gates and Sara
-Yaeger with input also from Doug Dummer and Aimee Lefkow.  Dan Bradley
+Yaeger with key input also from Doug Dummer and Aimee Lefkow.  Dan Bradley
 typed the code, such as it is, and Chad Seys provided a handy script
 for managing the browser in a kiosk.

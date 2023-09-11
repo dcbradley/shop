@@ -25,14 +25,14 @@ while( ($row=$stmt->fetch()) ) {
   $msg = implode("\r\n",$msg);
 
   $headers = array();
-  $headers[] = "From: " . SHOP_NAME . " Reminder <help@physics.wisc.edu>";
+  $headers[] = "From: " . SHOP_NAME . " Reminder <" . SHOP_FROM_EMAIL . ">";
   $headers[] = "Cc: " . SHOP_ADMIN_NAME . " <" . SHOP_ADMIN_EMAIL . ">";
   $headers = implode("\r\n",$headers);
 
   $to = $row["EMAIL"];
   $subject = "borrowed item: " . $row["ITEM_NAME"];
 
-  if( !mail($to,$subject,$msg,$headers) ) {
+  if( !mail($to,$subject,$msg,$headers,"-f " . SHOP_FROM_EMAIL) ) {
     echo "Failed to send reminder to $to.";
   }
 }

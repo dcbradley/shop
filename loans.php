@@ -83,13 +83,13 @@ function sendLoanReturnedReceipt($loan_row) {
   $msg = implode("\r\n",$msg);
 
   $headers = array();
-  $headers[] = "From: " . SHOP_NAME . " <help@physics.wisc.edu>";
+  $headers[] = "From: " . SHOP_NAME . " <" . SHOP_FROM_EMAIL . ">";
   $headers = implode("\r\n",$headers);
 
   $subject = "Thank you for returning " . $loan_row["ITEM_NAME"];
   $to = $user->email;
 
-  if( !mail($to,$subject,$msg,$headers,"-f help@physics.wisc.edu") ) {
+  if( !mail($to,$subject,$msg,$headers,"-f " . SHOP_FROM_EMAIL) ) {
     echo "<p class='alert alert-danger'>Failed to send receipt to ",htmlescape($to),".</p>\n";
   }
 }
