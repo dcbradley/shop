@@ -103,7 +103,9 @@ function showUserProfile($user) {
   echo "</div></div>\n";
   echo "<div class='$rowclass'><div class='$col1'><label for='phone'>Default Fund</label></div><div class='col'>";
   echoSelectFundingSource($user);
-  echo " <input type='submit' name='submit' value='Edit/Add Fund'>";
+  echo " <input type='submit' name='submit' id='edit_add_fund_submit' value='Edit/Add Fund'>";
+  # move the Edit/Add button to the same line as the select menu rather than after the manual search box, because it is less confusing this way
+  echo "<script>document.addEventListener('DOMContentLoaded', function() { $('#edit_add_fund_submit').insertAfter($('#funding_source')); });</script>\n";
   echo "<br><small>Need to look up information or ask others for help?  You can <a href='#' onclick='emailLink(); return false;'>email</a> yourself a link to this form and go fill it out from your own device.</small><span id='email-result'></span>\n"; 
   echo "</div></div>\n";
 

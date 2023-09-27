@@ -68,7 +68,10 @@ function autocomplete_matchfunc(inp, arr, match_func, min_chars, listitem_visibl
                 /*insert a input field that will hold the current array item's value:*/
                 b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
                 /*execute a function when someone clicks on the item value (DIV element):*/
-                b.addEventListener("click", function(e) {
+		/*Use mousedown rather than click, so this happens before the change event fires
+                  on the input due to it losing focus. This avoids some unexpected behaviors if
+                  the change event causes other things to happen.*/
+                b.addEventListener("mousedown", function(e) {
                     /*insert the value for the autocomplete text field:*/
                     inp.value = this.getElementsByTagName("input")[0].value;
                                   /*close the list of autocompleted values,
@@ -121,7 +124,7 @@ function autocomplete_matchfunc(inp, arr, match_func, min_chars, listitem_visibl
             e.preventDefault();
             if (currentFocus > -1) {
                 /*and simulate a click on the "active" item:*/
-                if (x) x[currentFocus].click();
+                if (x) x[currentFocus].dispatchEvent(new Event("mousedown"));
             } else {
 		closeAllLists();
 		if( document.activeElement ) document.activeElement.blur();
@@ -129,7 +132,7 @@ function autocomplete_matchfunc(inp, arr, match_func, min_chars, listitem_visibl
         } else if (e.keyCode == 9) {
             if (currentFocus > -1) {
                 /*click the selected item*/
-                if (x) x[currentFocus].click();
+                if (x) x[currentFocus].dispatchEvent(new Event("mousedown"));
             } else {
                 closeAllLists();
             }

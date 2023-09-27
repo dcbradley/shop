@@ -533,9 +533,9 @@ function initLogin() {
     if( isAdmin() ) {
       if( isset($_POST["euid"]) ) {
         $web_euid = $_POST["euid"];
-        setcookie("phys_shop_euid",$web_euid,0,COOKIE_PATH,"",true);
-      } else if( isset($_COOKIE["phys_shop_euid"]) ) {
-        $web_euid = $_COOKIE["phys_shop_euid"];
+        setcookie("shop_euid",$web_euid,0,COOKIE_PATH,"",true);
+      } else if( isset($_COOKIE["shop_euid"]) ) {
+        $web_euid = $_COOKIE["shop_euid"];
       }
       if( $web_euid ) {
         $web_user = new User;
@@ -567,19 +567,19 @@ function initLogin() {
         return;
       }
       $is_non_netid_login = true;
-      setcookie("phys_shop_group_login",$_POST["group_lgn"],0,COOKIE_PATH,"",true);
+      setcookie("shop_group_login",$_POST["group_lgn"],0,COOKIE_PATH,"",true);
     }
   }
-  else if( allowNonNetIDLogins() && isset($_COOKIE["phys_shop_group_login"]) && $_COOKIE["phys_shop_group_login"] ) {
+  else if( allowNonNetIDLogins() && isset($_COOKIE["shop_group_login"]) && $_COOKIE["shop_group_login"] ) {
     $web_user = new User;
-    $group_netid = $_COOKIE["phys_shop_group_login"] . "_group";
+    $group_netid = $_COOKIE["shop_group_login"] . "_group";
     $group_netid_already_group = "";
-    if( preg_match('|^.*_group$|',$_COOKIE["phys_shop_group_login"]) ) {
-      $group_netid_already_group = $_COOKIE["phys_shop_group_login"];
+    if( preg_match('|^.*_group$|',$_COOKIE["shop_group_login"]) ) {
+      $group_netid_already_group = $_COOKIE["shop_group_login"];
     }
     if( !$web_user->loadFromNetID($group_netid) &&
         !($group_netid_already_group && $web_user->loadFromNetID($group_netid_already_group)) &&
-        !$web_user->loadFromLocalLogin($_COOKIE["phys_shop_group_login"]) )
+        !$web_user->loadFromLocalLogin($_COOKIE["shop_group_login"]) )
     {
       $web_user = null;
       $login_error_msg = "Unknown group name.";
@@ -648,6 +648,10 @@ function isKiosk() {
   return isset($_COOKIE["shop_kiosk"]);
 }
 
+function showLogoutButton() {
+  return impersonatingUser() || isNonNetIDLogin() || getBackToAppInfo($junk,$junk2) || defined('LOGOUT_URL');
+}
+
 function echoShopLoginJavascript() {
   global $self_full_url;
   global $web_euid;
@@ -656,17 +660,17 @@ function echoShopLoginJavascript() {
   function login(show) {
     var url = "<?php echo $self_full_url ?>";
     if( show ) url = url + "?s=" + show;
-    window.location.href = "https://<?php echo $_SERVER["SERVER_NAME"] ?>/Shibboleth.sso/Login?isPassive=On&target=" + encodeURI(url);
+    window.location.href = '<?php echo LOGIN_URL ?>' + encodeURI(url);
   }
   function logout() {
     <?php
     if( impersonatingUser() ) {
     ?>
-      document.cookie = "phys_shop_euid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=<?php echo COOKIE_PATH ?>; secure";
+      document.cookie = "shop_euid=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=<?php echo COOKIE_PATH ?>; secure";
       window.location.href = "<?php echo $self_full_url ?>?s=edit_user&user_id=<?php echo htmlescape($web_euid)?>";
     <?php
     } else if( isNonNetIDLogin() ) {
-      echo "document.cookie = 'phys_shop_group_login=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=",COOKIE_PATH,"; secure';\n";
+      echo "document.cookie = 'shop_group_login=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=",COOKIE_PATH,"; secure';\n";
       echo "window.location.href = '",$self_full_url,"';\n";
     } else if( getBackToAppInfo($back_to_app_url,$back_to_app_name) ) {
       echo "unset_back_to_app_cookies();\n";
@@ -686,7 +690,7 @@ function echoShopLoginJavascript() {
         echo "var restart_w = null;\n";
      }
     ?>
-      var w = window.open("https://<?php echo $_SERVER["SERVER_NAME"] ?>/Shibboleth.sso/Logout?return=https://login.wisc.edu/logout",'_blank');
+      var w = window.open('<?php echo LOGOUT_URL ?>','_blank');
       if( !w ) {
         /* pop-up windows must be blocked (happens during auto-logout when ending a job; rely on browser to make the problem known to the user */
       }

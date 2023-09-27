@@ -6,7 +6,7 @@ function sortFundingSourceOptions($a,$b) {
   return 0;
 }
 
-function echoSelectFundingSource($user,$selected_funding_source=null,$disabled="",$show_details=false,$offer_to_set_default=false,$suffix="",$include_deleted=false) {
+function echoSelectFundingSource($user,$selected_funding_source=null,$disabled="",$show_details=false,$offer_to_set_default=false,$suffix="",$include_deleted=false,$show_search_box=true) {
   global $web_user;
 
   $dbh = connectDB();
@@ -19,6 +19,33 @@ function echoSelectFundingSource($user,$selected_funding_source=null,$disabled="
 
   echo "<select name='funding_source$suffix' id='funding_source$suffix' class='compact-select' $disabled>";
   echo "</select>\n";
+
+  if( $show_search_box ) {
+    ?><style>
+      .searchbox-container {
+        max-width: 100%;
+      }
+      .searchbox {
+        border: 1px solid grey;
+	flex-wrap: none;
+	display: flex;
+	max-width: 100%;
+      }
+      .searchbox input {
+        border: none;
+	max-width: 100%;
+	width: 30em;
+      }
+      .searchbox input:focus {
+        outline: none;
+      }
+      .searchbox .search-icon svg {
+        width: 1.25em;
+	height: 1.25em;
+      }
+    </style><?php
+    echo "<div class='autocomplete noprint searchbox-container'><div class='searchbox'><div class='search-icon' onclick='\$(this).parent().find(\"input\").focus()'><svg enable-background='new 0 0 512 512' id='Layer_1' version='1.1' xml:space='preserve' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='148.92 148.95 212.08 212.05'><g><ellipse cx='223.2' cy='223.2' fill='none' rx='62.2' ry='62.2' stroke='#000000' stroke-linecap='round' stroke-linejoin='round' stroke-miterlimit='10' stroke-width='10' transform='matrix(0.7071 -0.7071 0.7071 0.7071 -92.4615 223.2219)'></ellipse><line fill='none' stroke='#000000' stroke-linecap='round' stroke-linejoin='round' stroke-miterlimit='10' stroke-width='10' x1='267.2' x2='351' y1='267.2' y2='351'></line></g></svg></div><input type='search' id='funding_source_search$suffix' placeholder='search by funding string'/></div></div>\n";
+  }
 
   if( $show_details ) {
     echo "<br><div id='funding_source_details$suffix' style='font-family: monospace'></div>\n";
@@ -42,6 +69,7 @@ function echoSelectFundingSource($user,$selected_funding_source=null,$disabled="
   }
 
   $funding_sources = array();
+  $fund_search_strings = array();
   while( ($row=$stmt->fetch()) ) {
     if( $row["FUNDING_SOURCE_ID"] !== $selected_funding_source ) {
       if( !canSeeFundGroup($row) || (!$include_deleted && !$row["FUNDING_ACTIVE"]) ) {
@@ -78,6 +106,8 @@ function echoSelectFundingSource($user,$selected_funding_source=null,$disabled="
     }
 
     $funding_sources[$group_id][] = array($funding_source_id,$fs_display_name,$selected,$details);
+
+    $fund_search_strings[] = $fs_display_name;
   }
   foreach( $funding_sources as $key => $value ) {
     usort($funding_sources[$key],"sortFundingSourceOptions");
@@ -142,6 +172,44 @@ function echoSelectFundingSource($user,$selected_funding_source=null,$disabled="
     groupChanged<?php echo $suffix ?>();
   </script>
   <?php
+
+  if( $show_search_box ) {
+    ?><script>
+      var fund_search_strings = <?php echo json_encode($fund_search_strings); ?>;
+      document.addEventListener("DOMContentLoaded", function() {
+        var search_box = document.getElementById("funding_source_search<?php echo $suffix ?>");
+        autocomplete_unordered_words(search_box, fund_search_strings, 2);
+
+        search_box.addEventListener("change",function() {
+          var search_string = this.value;
+          var found = false;
+          var select_group = document.getElementById('group_id<?php echo $suffix ?>');
+          var select_fund = document.getElementById('funding_source<?php echo $suffix ?>');
+          for( const [group_id,funds]  of Object.entries(funding_sources<?php echo $suffix ?>) ) {
+            for( const fund_info of funds ) {
+              if( fund_info[1] == search_string ) {
+                select_group.value = group_id;
+                groupChanged<?php echo $suffix ?>();
+                select_fund.value = fund_info[0];
+                fundingSourceChanged<?php echo $suffix ?>();
+                updateFundingSourceDetails<?php echo $suffix ?>();
+                found = true;
+                break;
+              }
+            }
+            if( found ) break;
+          }
+          if( !found ) {
+            select_group.value = '';
+            groupChanged<?php echo $suffix ?>();
+            fundingSourceChanged<?php echo $suffix ?>();
+            select_fund.value = '';
+            updateFundingSourceDetails<?php echo $suffix ?>();
+          }
+        });
+      });
+    </script><?php
+  }
 }
 
 function canSeeFundGroup($group_row) {
@@ -698,7 +766,7 @@ function showSearchReplaceFund() {
 
   echo "<div class='$rowclass'><div class='$col1'>Fund to search for</div><div class='col'>";
   echoSelectUserGroup(null,$search_user_group_id);
-  echoSelectFundingSource(null,$search_funding_source_id,"",true,false,"",true);
+  echoSelectFundingSource(null,$search_funding_source_id,"",true,false,"",true,true);
   echo "</div></div>\n";
 
   $checked = isset($_REQUEST["replace"]) && $_REQUEST["replace"] ? "checked" : "";
@@ -706,7 +774,7 @@ function showSearchReplaceFund() {
 
   echo "<div class='$rowclass replace_section'><div class='$col1'>Fund to replace with</div><div class='col'>";
   echoSelectUserGroup(null,$replace_user_group_id,"","_replace");
-  echoSelectFundingSource(null,$replace_funding_source_id,"",true,false,"_replace");
+  echoSelectFundingSource(null,$replace_funding_source_id,"",true,false,"_replace",true,true);
   echo "</div></div>\n";
 
   echo "<input type='submit' value='Submit'/>\n";

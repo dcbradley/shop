@@ -366,7 +366,9 @@ function showNavbar($user,$show) {
             echo " <span class='navbar-text'>(non-admin mode)</span>&nbsp;";
           }
         ?>
+	<?php if( showLogoutButton() ) { ?>
         <button class="btn btn-secondary my-2 my-sm-0" onclick='logout(); return false;'>Log Out</button>
+	<?php } ?>
       </div>
     </nav>
 <?php

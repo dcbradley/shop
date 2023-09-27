@@ -20,6 +20,12 @@ const SHOP_FROM_EMAIL = "example@department.wisc.edu";
 # Full URL of this app.
 const SHOP_URL = "https://example.wisc.edu/shop";
 
+# Login URL
+const LOGIN_URL = "https://example.wisc.edu/Shibboleth.sso/Login?isPassive=On&target=";
+
+# Logout URL
+const LOGOUT_URL = "https://example.wisc.edu/Shibboleth.sso/Logout?return=https://login.wisc.edu/logout";
+
 # IP address blocks in which to allow group account access (i.e. just entering a group account name and not authenticating)
 # Format is the left-most part of the IP address to match.
 #const IP_RANGE_TO_ALLOW_UNAUTHENTICATED_LOGINS = array();

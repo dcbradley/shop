@@ -1,3 +1,7 @@
+v1.02 - Removed more hard-coded references to physics and wisc.edu.
+        Added "search by funding string" as an alternative to navigating
+        the fund selector.
+
 v1.01 - Removed some hard-coded references to the physics department
         and replaced these with configurable parameters.
 

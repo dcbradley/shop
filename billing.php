@@ -862,7 +862,7 @@ function exportBillingBatchTransfersExcel() {
 
 function writeBillingBatchTransfersCSV($F,$billing_batch_id,$status) {
   fputcsv_excel($F,array("NSCT"));
-  $csv = array("Department","Fund","Program","Project","Activity","Account","Class","Amount","Description (30)","Jnl_Ln_Ref (10)","Reference (10)","Voucher No (10)","Invoice No (12)");
+  $csv = array("Department","Fund","Program","Project","Activity ID","Account","Class","Amount","Description (30)","Jnl_Ln_Ref (10)","Reference (10)","Voucher No (10)","Invoice No (12)");
   fputcsv_excel($F,$csv);
 
   $bb_row = loadBillingBatch($billing_batch_id);
@@ -993,7 +993,7 @@ function writeBillingBatchTransfersExcel($F,$billing_batch_id,$status) {
   \PhpOffice\PhpSpreadsheet\Cell\Cell::setValueBinder( new \PhpOffice\PhpSpreadsheet\Cell\StringValueBinder() );
 
   $sheet->fromArray(array("NSCT"),null,'A1');
-  $sheet->fromArray(array("Department","Fund","Program","Project","Activity","Account","Class","Amount","Description (30)","Jnl_Ln_Ref (10)","Reference (10)","Voucher No (10)","Invoice No (12)"),null,'A2');
+  $sheet->fromArray(array("Department","Fund","Program","Project","Activity ID","Account","Class","Amount","Description (30)","Jnl_Ln_Ref (10)","Reference (10)","Voucher No (10)","Invoice No (12)"),null,'A2');
   $row_num = 3;
 
   $bb_row = loadBillingBatch($billing_batch_id);

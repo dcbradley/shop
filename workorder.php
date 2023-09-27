@@ -409,7 +409,9 @@ function showNavbar($user,$show,$default_show) {
 	    $logout = "Back to " . $back_to_app_name;
 	  }
         ?>
+	<?php if( showLogoutButton() ) { ?>
         <button class="btn btn-secondary my-2 my-sm-0" onclick='logout(); return false;'><?php echo htmlescape($logout) ?></button>
+	<?php } ?>
       </div>
     </nav>
 <?php
